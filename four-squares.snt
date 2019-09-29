@@ -1,12 +1,13 @@
-function^ threeSquares () {
+function^ fourSquares () {
   function^ main () {
-    array16<int> square1, square2, square3;
+    array16<int> square1, square2, square3, square4;
 
     square1.mustDescribe(square2);
     square2.mustDescribe(square3);
-    square3.mustDescribe(square1);
+    square3.mustDescribe(square4);
+    square4.mustDescribe(square1);
 
-    expose square1, square2, square3;
+    expose square1, square2, square3, square4;
   };
 
   function^ mustDescribe (a, b) {
@@ -157,4 +158,4 @@ lookupTable = [
   [2, 0, 0, 0, 2, 0, 4, 0, 0, 0, 1, 0, 0, 0, 0, 1]  # NINETY-NINE
 ];
 
-threeSquares();
+fourSquares();
