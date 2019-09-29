@@ -1,0 +1,160 @@
+function^ threeSquares () {
+  function^ main () {
+    array16<int> square1, square2, square3;
+
+    square1.mustDescribe(square2);
+    square2.mustDescribe(square3);
+    square3.mustDescribe(square1);
+
+    expose square1, square2, square3;
+  };
+
+  function^ mustDescribe (a, b) {
+    numberOfPlurals = b.countBy(*moreThanOne?);
+    lettersForEachNumber = b.map(*lettersForNumberWord);
+
+    numberOfEachLetter = lettersForEachNumber.transpose.map(*sum);
+    numberOfEachLetter = numberOfEachLetter.map(*addMandatoryLetter);
+    numberOfEachLetter = numberOfEachLetter.addPlurals(numberOfPlurals);
+
+    invariant numberOfEachLetter == a;
+    invariant b.all?(*inBounds?);
+  };
+
+  function moreThanOne? (n) {
+    return n > 1;
+  };
+
+  function^ lettersForNumberWord (n) {
+    return lookupTable[n - 1];
+  };
+
+  function addMandatoryLetter (n) {
+    return n + 1;
+  };
+
+  function addArray (self, other) {
+    return [self, other].transpose.map(*sum);
+  };
+
+  function addPlurals (self, numberOfPlurals) {
+    return self.map(function^ (n, index) {
+      return isPlural?(index) ? n + numberOfPlurals : n;
+    });
+  };
+
+  function isPlural? (index) {
+    return index == 9; # S
+  };
+
+  function^ inBounds? (n) {
+    return n.between?(0, lookupTable.size);
+  };
+
+  main();
+};
+
+lookupTable = [
+ # E  F  G  H  I  L  N  O  R  S  T  U  V  W  X  Y
+  [1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0], # ONE
+  [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0], # TWO
+  [2, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0], # THREE
+  [0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0], # FOUR
+  [1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0], # FIVE
+  [0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0], # SIX
+  [2, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0], # SEVEN
+  [1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0], # EIGHT
+  [1, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0], # NINE
+  [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0], # TEN
+  [3, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0], # ELEVEN
+  [2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0], # TWELVE
+  [2, 0, 0, 1, 1, 0, 1, 0, 1, 0, 2, 0, 0, 0, 0, 0], # THIRTEEN
+  [2, 1, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0], # FOURTEEN
+  [2, 2, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0], # FIFTEEN
+  [2, 0, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0], # SIXTEEN
+  [4, 0, 0, 0, 0, 0, 2, 0, 0, 1, 1, 0, 1, 0, 0, 0], # SEVENTEEN
+  [3, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0], # EIGHTEEN
+  [3, 0, 0, 0, 1, 0, 3, 0, 0, 0, 1, 0, 0, 0, 0, 0], # NINETEEN
+  [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 1, 0, 1], # TWENTY
+  [2, 0, 0, 0, 0, 0, 2, 1, 0, 0, 2, 0, 0, 1, 0, 1], # TWENTY-ONE
+  [1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 3, 0, 0, 2, 0, 1], # TWENTY-TWO
+  [3, 0, 0, 1, 0, 0, 1, 0, 1, 0, 3, 0, 0, 1, 0, 1], # TWENTY-THREE
+  [1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 2, 1, 0, 1, 0, 1], # TWENTY-FOUR
+  [2, 1, 0, 0, 1, 0, 1, 0, 0, 0, 2, 0, 1, 1, 0, 1], # TWENTY-FIVE
+  [1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 2, 0, 0, 1, 1, 1], # TWENTY-SIX
+  [3, 0, 0, 0, 0, 0, 2, 0, 0, 1, 2, 0, 1, 1, 0, 1], # TWENTY-SEVEN
+  [2, 0, 1, 1, 1, 0, 1, 0, 0, 0, 3, 0, 0, 1, 0, 1], # TWENTY-EIGHT
+  [2, 0, 0, 0, 1, 0, 3, 0, 0, 0, 2, 0, 0, 1, 0, 1], # TWENTY-NINE
+  [0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 1], # THIRTY
+  [1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 2, 0, 0, 0, 0, 1], # THIRTY-ONE
+  [0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 3, 0, 0, 1, 0, 1], # THIRTY-TWO
+  [2, 0, 0, 2, 1, 0, 0, 0, 2, 0, 3, 0, 0, 0, 0, 1], # THIRTY-THREE
+  [0, 1, 0, 1, 1, 0, 0, 1, 2, 0, 2, 1, 0, 0, 0, 1], # THIRTY-FOUR
+  [1, 1, 0, 1, 2, 0, 0, 0, 1, 0, 2, 0, 1, 0, 0, 1], # THIRTY-FIVE
+  [0, 0, 0, 1, 2, 0, 0, 0, 1, 1, 2, 0, 0, 0, 1, 1], # THIRTY-SIX
+  [2, 0, 0, 1, 1, 0, 1, 0, 1, 1, 2, 0, 1, 0, 0, 1], # THIRTY-SEVEN
+  [1, 0, 1, 2, 2, 0, 0, 0, 1, 0, 3, 0, 0, 0, 0, 1], # THIRTY-EIGHT
+  [1, 0, 0, 1, 2, 0, 2, 0, 1, 0, 2, 0, 0, 0, 0, 1], # THIRTY-NINE
+  [0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 1], # FORTY
+  [1, 1, 0, 0, 0, 0, 1, 2, 1, 0, 1, 0, 0, 0, 0, 1], # FORTY-ONE
+  [0, 1, 0, 0, 0, 0, 0, 2, 1, 0, 2, 0, 0, 1, 0, 1], # FORTY-TWO
+  [2, 1, 0, 1, 0, 0, 0, 1, 2, 0, 2, 0, 0, 0, 0, 1], # FORTY-THREE
+  [0, 2, 0, 0, 0, 0, 0, 2, 2, 0, 1, 1, 0, 0, 0, 1], # FORTY-FOUR
+  [1, 2, 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0, 0, 1], # FORTY-FIVE
+  [0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1], # FORTY-SIX
+  [2, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1], # FORTY-SEVEN
+  [1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 2, 0, 0, 0, 0, 1], # FORTY-EIGHT
+  [1, 1, 0, 0, 1, 0, 2, 1, 1, 0, 1, 0, 0, 0, 0, 1], # FORTY-NINE
+  [0, 2, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], # FIFTY
+  [1, 2, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1], # FIFTY-ONE
+  [0, 2, 0, 0, 1, 0, 0, 1, 0, 0, 2, 0, 0, 1, 0, 1], # FIFTY-TWO
+  [2, 2, 0, 1, 1, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 1], # FIFTY-THREE
+  [0, 3, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1], # FIFTY-FOUR
+  [1, 3, 0, 0, 2, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1], # FIFTY-FIVE
+  [0, 2, 0, 0, 2, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1], # FIFTY-SIX
+  [2, 2, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1], # FIFTY-SEVEN
+  [1, 2, 1, 1, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1], # FIFTY-EIGHT
+  [1, 2, 0, 0, 2, 0, 2, 0, 0, 0, 1, 0, 0, 0, 0, 1], # FIFTY-NINE
+  [0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1], # SIXTY
+  [1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1], # SIXTY-ONE
+  [0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 2, 0, 0, 1, 1, 1], # SIXTY-TWO
+  [2, 0, 0, 1, 1, 0, 0, 0, 1, 1, 2, 0, 0, 0, 1, 1], # SIXTY-THREE
+  [0, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1], # SIXTY-FOUR
+  [1, 1, 0, 0, 2, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1], # SIXTY-FIVE
+  [0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 1, 0, 0, 0, 2, 1], # SIXTY-SIX
+  [2, 0, 0, 0, 1, 0, 1, 0, 0, 2, 1, 0, 1, 0, 1, 1], # SIXTY-SEVEN
+  [1, 0, 1, 1, 2, 0, 0, 0, 0, 1, 2, 0, 0, 0, 1, 1], # SIXTY-EIGHT
+  [1, 0, 0, 0, 2, 0, 2, 0, 0, 1, 1, 0, 0, 0, 1, 1], # SIXTY-NINE
+  [2, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1], # SEVENTY
+  [3, 0, 0, 0, 0, 0, 2, 1, 0, 1, 1, 0, 1, 0, 0, 1], # SEVENTY-ONE
+  [2, 0, 0, 0, 0, 0, 1, 1, 0, 1, 2, 0, 1, 1, 0, 1], # SEVENTY-TWO
+  [4, 0, 0, 1, 0, 0, 1, 0, 1, 1, 2, 0, 1, 0, 0, 1], # SEVENTY-THREE
+  [2, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1], # SEVENTY-FOUR
+  [3, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 2, 0, 0, 1], # SEVENTY-FIVE
+  [2, 0, 0, 0, 1, 0, 1, 0, 0, 2, 1, 0, 1, 0, 1, 1], # SEVENTY-SIX
+  [4, 0, 0, 0, 0, 0, 2, 0, 0, 2, 1, 0, 2, 0, 0, 1], # SEVENTY-SEVEN
+  [3, 0, 1, 1, 1, 0, 1, 0, 0, 1, 2, 0, 1, 0, 0, 1], # SEVENTY-EIGHT
+  [3, 0, 0, 0, 1, 0, 3, 0, 0, 1, 1, 0, 1, 0, 0, 1], # SEVENTY-NINE
+  [1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], # EIGHTY
+  [2, 0, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1], # EIGHTY-ONE
+  [1, 0, 1, 1, 1, 0, 0, 1, 0, 0, 2, 0, 0, 1, 0, 1], # EIGHTY-TWO
+  [3, 0, 1, 2, 1, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 1], # EIGHTY-THREE
+  [1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1], # EIGHTY-FOUR
+  [2, 1, 1, 1, 2, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1], # EIGHTY-FIVE
+  [1, 0, 1, 1, 2, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1], # EIGHTY-SIX
+  [3, 0, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1], # EIGHTY-SEVEN
+  [2, 0, 2, 2, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1], # EIGHTY-EIGHT
+  [2, 0, 1, 1, 2, 0, 2, 0, 0, 0, 1, 0, 0, 0, 0, 1], # EIGHTY-NINE
+  [1, 0, 0, 0, 1, 0, 2, 0, 0, 0, 1, 0, 0, 0, 0, 1], # NINETY
+  [2, 0, 0, 0, 1, 0, 3, 1, 0, 0, 1, 0, 0, 0, 0, 1], # NINETY-ONE
+  [1, 0, 0, 0, 1, 0, 2, 1, 0, 0, 2, 0, 0, 1, 0, 1], # NINETY-TWO
+  [3, 0, 0, 1, 1, 0, 2, 0, 1, 0, 2, 0, 0, 0, 0, 1], # NINETY-THREE
+  [1, 1, 0, 0, 1, 0, 2, 1, 1, 0, 1, 1, 0, 0, 0, 1], # NINETY-FOUR
+  [2, 1, 0, 0, 2, 0, 2, 0, 0, 0, 1, 0, 1, 0, 0, 1], # NINETY-FIVE
+  [1, 0, 0, 0, 2, 0, 2, 0, 0, 1, 1, 0, 0, 0, 1, 1], # NINETY-SIX
+  [3, 0, 0, 0, 1, 0, 3, 0, 0, 1, 1, 0, 1, 0, 0, 1], # NINETY-SEVEN
+  [2, 0, 1, 1, 2, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 1], # NINETY-EIGHT
+  [2, 0, 0, 0, 2, 0, 4, 0, 0, 0, 1, 0, 0, 0, 0, 1]  # NINETY-NINE
+];
+
+threeSquares();
